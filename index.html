@@ -1,0 +1,243 @@
+<html>
+  <head>
+<script
+  src="https://code.jquery.com/jquery-3.2.1.js"
+  integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+  crossorigin="anonymous"></script>    <script>    
+var AudioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+window.app = {};
+window.app.start = 0;
+window.app.end = 0;
+window.app.freq = 0;
+var note_history = [];
+
+/*https://upload.wikimedia.org/wikipedia/commons/a/ad/Piano_key_frequencies.png */
+var freqMap = {
+    1: 27.5,
+    2: 29.1352,
+    3: 30.8677,
+    4: 32.7032,
+    5: 34.6478,
+    6: 36.7081,
+    7: 38.8909,
+    8: 41.2034,
+    9: 43.6535,
+    10: 46.2493,
+    11: 48.9994,
+    12: 51.9131,
+    13: 55,
+    14: 58.2705,
+    15: 61.7354,    
+    16: 65.4064,
+    17: 69.2957,
+    18: 73.4162,
+    19: 77.7817,
+    20: 82.4069,
+    21: 87.3071,
+    22: 92.4986,
+    23: 97.9989,
+    24: 103.826,
+    25: 110,
+    26: 116.541,
+    27: 123.471,
+    28: 130.813,
+    29: 138.591,
+    30: 146.832,
+    31: 155.563,
+    32: 164.814,
+    33: 174.614,
+    34: 184.997,
+    35: 195.998,
+    36: 207.652,
+    "37": 220,
+    "38": 233.082,
+    "39": 246.942,
+    "40": 261.626,
+    "41": 277.183,
+    "42": 293.665,
+    "43": 311.127,
+    "44": 329.629,
+    "45": 349.228,
+    "46": 369.994,
+    "47": 391.995,
+    "48": 415.305,
+    "49": 440.000,
+    "50": 466.164,
+    "51": 493.883,
+    "52": 523.251,
+    "53": 554.365,
+    "54": 587.330,
+    "55": 622.254,
+    "56": 659.255,
+    "57": 698.456,
+    "58": 739.989,
+    "59": 783.991,
+    "60": 830.609,
+    "61": 880.000,
+    "62": 932.328,
+    "63": 987.767,
+    "64": 1046.502,
+    "65": 1108.731,
+    "66": 1174.659,
+    "67": 1244.598,
+    "68": 1318.520,
+    "69": 1396.913,
+    "70": 1479.978,
+    "71": 1567.982,
+    "72": 1661.219,
+    "73": 1760.000,
+    "74": 1864.655,
+    "75": 1975.533,
+    "76": 2093.004,
+    "77": 2217.461,
+    "78": 2439.318,
+    "79": 2489.016,
+    "80": 2637.020,
+    "81": 2793.826,
+    "82": 2959.955,
+    "83": 3135.437,
+    "84": 3322.437,
+    "85": 3520.000,
+    "86": 3729.310,
+    "87": 3951.066,
+    "88": 4186.009
+};
+
+
+
+
+var keys = Array.from(Object.keys(freqMap));
+for (var key of keys) {
+    freqMap[key - 1] = freqMap[key];
+    delete freqMap[key];
+};
+
+function beep(freq, dur, event) {
+    var oscillator = AudioContext.createOscillator();
+    oscillator.type = 'square';
+    oscillator.connect(AudioContext.destination);
+    oscillator.frequency.value = freq;
+    oscillator.start();
+
+    if (event) {
+        app.start = new Date().getTime();
+        app.freq = freq;
+        $(event.target).one('mouseup', () => {
+            app.end = new Date().getTime();
+            var delta_ms = app.end - app.start;
+            var entry = {
+                freq: app.freq,
+                dur: delta_ms
+            };
+            note_history.push(entry);
+            console.log(entry);
+            
+            oscillator.stop();
+        });
+    } else {
+        setTimeout(() => {
+            oscillator.stop();
+        }, dur);
+    }
+}
+
+/*
+
+[{"freq":174.614,"dur":180},{"freq":195.998,"dur":150},{"freq":195.998,"dur":102},{"freq":261.626,"dur":339},{"freq":329.629,"dur":337},{"freq":97.9989,"dur":206},{"freq":97.9989,"dur":207},{"freq":146.832,"dur":189},{"freq":146.832,"dur":85},{"freq":293.665,"dur":328},{"freq":220,"dur":493},{"freq":207.652,"dur":115},{"freq":195.998,"dur":281},{"freq":174.614,"dur":388},{"freq":146.832,"dur":232},{"freq":174.614,"dur":301},{"freq":195.998,"dur":307},{"freq":130.813,"dur":361},{"freq":130.813,"dur":252},{"freq":293.665,"dur":383},{"freq":246.942,"dur":574},{"freq":220,"dur":369},{"freq":207.652,"dur":167},{"freq":195.998,"dur":192},{"freq":174.614,"dur":264},{"freq":146.832,"dur":105},{"freq":174.614,"dur":151},{"freq":195.998,"dur":289},{"freq":164.814,"dur":251},{"freq":146.832,"dur":218},{"freq":146.832,"dur":108},{"freq":246.942,"dur":282},{"freq":293.665,"dur":296},{"freq":246.942,"dur":293},{"freq":195.998,"dur":340},{"freq":220,"dur":453},{"freq":207.652,"dur":300},{"freq":195.998,"dur":64},{"freq":174.614,"dur":310},{"freq":164.814,"dur":220},{"freq":146.832,"dur":195},{"freq":174.614,"dur":213},{"freq":195.998,"dur":261},1498426193901,1498426194377,476,{"freq":233.082,"dur":405},{"freq":277.183,"dur":482},{"freq":261.626,"dur":527},{"freq":293.665,"dur":352},{"freq":293.665,"dur":285},{"freq":329.629,"dur":290},{"freq":349.228,"dur":256},{"freq":349.228,"dur":251},{"freq":349.228,"dur":124},{"freq":349.228,"dur":194},{"freq":349.228,"dur":228},1498426205086,1498426205300,214,{"freq":349.228,"dur":369},1498426206687,1498426207025,338,{"freq":293.665,"dur":512},1498426207920,1498426208336,416,{"freq":293.665,"dur":711},{"freq":293.665,"dur":218},{"freq":349.228,"dur":445},{"freq":349.228,"dur":292},{"freq":349.228,"dur":458},1498426212719,1498426213018,299,{"freq":391.995,"dur":332},{"freq":415.305,"dur":238},{"freq":391.995,"dur":286},{"freq":349.228,"dur":252},{"freq":293.665,"dur":256},{"freq":349.228,"dur":245},{"freq":391.995,"dur":443},1498426217181,1498426217455,274,{"freq":391.995,"dur":347},{"freq":349.228,"dur":392},{"freq":349.228,"dur":205},{"freq":349.228,"dur":327},{"freq":391.995,"dur":394}]
+*/
+
+var replay = function() {
+    var replay = function(cur) {
+        if (cur != note_history.length) {
+            var entry = note_history[cur];
+            beep(entry.freq, entry.dur);
+            setTimeout(() => {
+                replay(cur + 1);
+            }, entry.dur);
+        }
+    }
+    
+    replay(0);
+};
+
+
+function pressKey(num) {
+    beep(freqMap[num - 1], 500);
+}
+
+var space_down = false;
+
+$(window).one('load', () => {
+    var svg = $($("#piano")[0].contentDocument);
+
+    svg[0].addEventListener('keydown', function(e) {
+        if (space_down)
+            return;
+                    
+        if (e.key == " ") {
+            space_down = true;
+            app.freq = 0;
+            app.start = new Date().getTime();
+            console.log(e);
+        }
+    });
+
+    svg[0].addEventListener('keyup', function(e) {
+        if (e.key == " ") {
+            space_down = false;
+            app.end = new Date().getTime();
+            var delta = app.end - app.start;
+            var entry = {
+                freq: app.freq,
+                dur: delta
+            };
+            note_history.push(app.start, app.end, delta);
+            console.log(entry);
+        }
+    });        
+
+    var keyNos = Array.from(Array(88).keys());
+    var keys = keyNos.reduce((prev, cur) => {        
+        var t = svg.find("#key" + cur);
+        prev[cur] = t;
+        try {
+        var f = beep.bind(null, freqMap[cur], 500);        
+            t[0].addEventListener('mousedown', f);
+        } catch (e) {}
+        
+        return prev;
+    }, {});
+    
+    $("#get").on("click", function() {
+        var l = $("<a></a>");
+        l.attr("href", "data://text/plain, " + JSON.stringify(note_history));
+        l.prop("download");
+        l.attr("target", "blank");
+        var b = $(document.body);
+        b.append(l);
+        l[0].click();
+        b.remove(l);
+    });
+    
+    $("#reset").on("click", function() {
+        note_history = [];
+    });
+    
+    $("#load").on("click", function() {
+        var x = prompt();
+        note_history = JSON.parse(x);
+    });
+});
+
+    </script>
+  </head>
+  <body>
+    <object type="image/svg+xml" data="piano.svg" id="piano">   
+    </object>    
+    <button id="get">get it</button>
+    <button id="reset">reset</button>
+    <button id="load">load</button>
+    <button onclick="replay()" id="replay">replay</button>
+  </body>
+</html>
