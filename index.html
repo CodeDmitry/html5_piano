@@ -119,7 +119,11 @@ function beep(freq, dur, event) {
     var oscillator = AudioContext.createOscillator();    
     oscillator.type = 'square';
     oscillator.connect(AudioContext.destination);
+    try {
     oscillator.frequency.value = freq;
+    } catch (e) {
+        console.log(freq);
+    }
     oscillators.push(oscillator);
     oscillator.start();
 
@@ -213,7 +217,7 @@ $(window).one('load', () => {
                 freq: app.freq,
                 dur: delta
             };
-            note_history.push(app.start, app.end, delta);
+            note_history.push(entry);
             console.log(entry);
         }
     });        
