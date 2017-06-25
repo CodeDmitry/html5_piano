@@ -180,8 +180,21 @@ $(window).one('load', () => {
             app.freq = 0;
             app.start = new Date().getTime();
             console.log(e);
-        }
+        } 
     });
+
+    svg[0].addEventListener('keydown', function(e) {                    
+        if (e.code == "Backspace") {
+            note_history.pop();
+        } 
+    });
+
+    window.addEventListener('keydown', function(e) {                    
+        if (e.code == "Backspace") {
+            note_history.pop();
+        } 
+    });
+
 
     svg[0].addEventListener('keyup', function(e) {
         if (e.key == " ") {
@@ -235,9 +248,13 @@ $(window).one('load', () => {
   <body>
     <object type="image/svg+xml" data="piano.svg" id="piano">   
     </object>    
+    <ul>
+      <li>Backspace to undo</li>
+      <li>hold space to add silence for the duration you press it down</li>
+    </ul>
     <button id="get">get it</button>
     <button id="reset">reset</button>
     <button id="load">load</button>
-    <button onclick="replay()" id="replay">replay</button>
+    <button onclick="replay()" id="replay">replay</button>    
   </body>
 </html>
