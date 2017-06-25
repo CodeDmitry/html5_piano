@@ -12,6 +12,8 @@ window.app.end = 0;
 window.app.freq = 0;
 var note_history = [];
 
+var oscillator = null;
+
 /*https://upload.wikimedia.org/wikipedia/commons/a/ad/Piano_key_frequencies.png */
 var freqMap = {
     1: 27.5,
@@ -114,7 +116,7 @@ for (var key of keys) {
 };
 
 function beep(freq, dur, event) {
-    var oscillator = AudioContext.createOscillator();
+    oscillator = AudioContext.createOscillator();
     oscillator.type = 'square';
     oscillator.connect(AudioContext.destination);
     oscillator.frequency.value = freq;
@@ -241,7 +243,14 @@ $(window).one('load', () => {
         var x = prompt();
         note_history = JSON.parse(x);
     });
+    
+    $("#silence").on("click", function() {
+        try {
+            oscillator.stop();
+        } catch (e){}
+    });
 });
+    
 
     </script>
   </head>
@@ -249,12 +258,14 @@ $(window).one('load', () => {
     <object type="image/svg+xml" data="piano.svg" id="piano">   
     </object>    
     <ul>
+      <li>If beep gets stuck, press silence active beeps button below</li>
       <li>Backspace to undo</li>
       <li>hold space to add silence for the duration you press it down</li>
     </ul>
     <button id="get">get it</button>
     <button id="reset">reset</button>
     <button id="load">load</button>
-    <button onclick="replay()" id="replay">replay</button>    
+    <button onclick="replay()" id="replay">replay</button> 
+    <button id="silence">silence active beeps</button>
   </body>
 </html>
