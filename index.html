@@ -12,7 +12,7 @@ window.app.end = 0;
 window.app.freq = 0;
 var note_history = [];
 
-var oscillator = null;
+var oscillators = [];
 
 /*https://upload.wikimedia.org/wikipedia/commons/a/ad/Piano_key_frequencies.png */
 var freqMap = {
@@ -116,16 +116,22 @@ for (var key of keys) {
 };
 
 function beep(freq, dur, event) {
-    oscillator = AudioContext.createOscillator();
+    var oscillator = AudioContext.createOscillator();    
     oscillator.type = 'square';
     oscillator.connect(AudioContext.destination);
     oscillator.frequency.value = freq;
+    oscillators.push(oscillator);
     oscillator.start();
 
     if (event) {
         app.start = new Date().getTime();
         app.freq = freq;
         $(event.target).one('mouseup', () => {
+            for (var i = 0; i < oscillators.length; ++i) {
+                if (oscillators[i] == oscillator) {
+                    oscillators.splice(i, 1);
+                }
+            }
             app.end = new Date().getTime();
             var delta_ms = app.end - app.start;
             var entry = {
@@ -245,9 +251,12 @@ $(window).one('load', () => {
     });
     
     $("#silence").on("click", function() {
-        try {
-            oscillator.stop();
-        } catch (e){}
+        while (oscillators.length) {        
+            try {                
+                var osc = oscillators.pop();
+                osc.stop();
+            } catch (e){}
+        }
     });
 });
     
