@@ -1197,10 +1197,12 @@ once(window, 'load', function() {
       <li>Backspace to undo</li>
       <li>hold space to add silence for the duration you press it down</li>
     </ul>
+    <div style="bottom: 0px; left: 0px; position: fixed; z-index: 9001;">
     <button id="get">get it</button>
     <button id="reset">reset</button>
     <button id="load">load</button>
     <button onclick="replay()" id="replay">replay</button> 
     <button id="silence">silence active beeps</button>
+    </div>
   </body>
 </html>
