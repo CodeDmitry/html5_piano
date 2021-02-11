@@ -1,4 +1,4 @@
-# share_music
-record a tune and share it with others
+# html5 piano
+can play a tune and record/share it with others through a code.
 
 codedmitry.github.io/share_music
